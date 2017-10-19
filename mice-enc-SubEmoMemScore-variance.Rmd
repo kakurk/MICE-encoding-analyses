@@ -1,0 +1,10 @@
+---
+title: "MICE Encoding SubEmoMemScore Variance"
+author: Kyle Kurkela
+date: '`r Sys.Date()`'
+output: html_notebook
+---
+
+```{r}
+
+```
