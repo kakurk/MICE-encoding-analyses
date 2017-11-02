@@ -80,4 +80,58 @@ tidy.df %>%
 ```
 
 *Conclusion:*  
-It looks like there is NOT a lot of variance in the Subsequent Emotional Memory Score Parametric Modulator for many subjects...  
+It looks like there is NOT a lot of variance in the Subsequent Emotional Memory Score Parametric Modulator for many subjects... 
+
+# Examining non-HC Correct Trials cut-offs
+
+How many subjects would we lose if we used a cut-off of at least 10 non-HC Correct Trials?
+
+```{r}
+tidy.df %>%
+  mutate(
+    SubEmoMemScore = factor(SubEmoMemScore, levels = c("4", "NaN", "1", "2", "3"))
+  ) %>%
+  ggplot(aes(x = subject, fill = SubEmoMemScore)) +
+  geom_bar(position = "stack", width = .8) +
+  facet_grid(~Emotion) +
+  theme(axis.text.x = element_blank()) +
+  xlab("Subjects") +
+  ylab("Trial Count") +
+  ggtitle("Subsequent Emotional Memory Score Variance", subtitle = "Among MICE fMRI Subjects") +
+  labs(caption = "NaN = Subsequent NRs\nRed Shades = Incorrect, Blue Shades = Correct") +
+  scale_fill_manual(values=c("#2b8cbe", "#fecc5c", "#fd8d3c", "#e31a1c", "#a6bddb")) + 
+  geom_hline(yintercept = 10, color = "black")
+```
+
+Note: The Light Blue + Red-ish colors need to exceed the black line for BOTH negative AND neutral.
+
+## Block Level Score Distribution
+
+```{r block_level}
+tidy.df %>%
+  group_by(subject, run) %>%
+  mutate(miniblock = factor(rep(1:(n()/4), each = 4)),
+         SubEmoMemScore = as.numeric(SubEmoMemScore)) -> tidy.df
+
+tidy.df %>%
+  group_by(subject, run, miniblock) %>%
+  summarize(Emotion = unique(Emotion),
+            BlockLevelSubEmoMemScore = sum(SubEmoMemScore)) %>%
+  mutate(BlockLevelSubEmoMemScore = factor(BlockLevelSubEmoMemScore,
+                                           levels = (c("20", "19", "18", "17", "16", "15", 
+                                                      "14", "13", "12", "11", "10", "9", 
+                                                      "8", "7", "6", "4")))) %>%
+  ggplot(aes(x = subject, fill = BlockLevelSubEmoMemScore)) +
+  geom_bar(position = "stack") + facet_grid(~Emotion) +
+  theme(axis.text.x = element_blank()) +
+  scale_fill_manual(values=rev(c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
+                                 '#ef6548','#d7301f','#b30000','#7f0000','#edf8e9',
+                                 '#bae4b3','#74c476','#238b45','#ece7f2','#a6bddb',
+                                 '#2b8cbe'))) +
+  ylab("Block Count") +
+  xlab("Subjects") +
+  ggtitle("Subsequent Emotional Memory Score Variance", subtitle = "Among MICE fMRI Subjects, by Miniblock") +
+  labs(caption = "Red Shades = Low Scoring Miniblocks\nBlue/Green Shades = High Scoring MiniBlocks")
+  
+```
+
