@@ -1,11 +1,10 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output: rmarkdown::github_document
 ---
 
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 library('tidyverse')
-library('ggpubr')
 ```
 
 
